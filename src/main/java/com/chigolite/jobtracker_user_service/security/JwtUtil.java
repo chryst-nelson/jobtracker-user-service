@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.chigolite.jobtracker_user_service.user.entity.User;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -25,9 +27,13 @@ public class JwtUtil {
     }
 
     public String generateToken(UserDetails userDetails) {
+        User user = (User) userDetails;
+
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
+                .claim("userId", user.getId().toString()) // add this
+                .claim("role", user.getRole().name())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
